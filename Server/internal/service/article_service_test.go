@@ -21,7 +21,7 @@ func (m *memCounter) Inc(ctx context.Context, id uint64) error {
 func (m *memCounter) GetIncrement(ctx context.Context, id uint64) (int64, error) {
 	return m.inc[id], nil
 }
-func (m *memCounter) DirtyMembers(ctx context.Context) ([]string, error) { return nil, nil }
+func (m *memCounter) DirtyMembers(ctx context.Context) ([]uint64, error) { return nil, nil }
 func (m *memCounter) DrainIncrement(ctx context.Context, id uint64) (int64, error) {
 	v := m.inc[id]
 	m.inc[id] = 0
