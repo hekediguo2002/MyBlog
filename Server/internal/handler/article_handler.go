@@ -129,8 +129,15 @@ func (h *ArticleHandler) List(c *gin.Context) {
 		Size: parseIntDefault(c.Query("size"), 10),
 		Tag:  strings.TrimSpace(c.Query("tag")),
 	}
-	if uid, err := strconv.ParseUint(c.Query("user_id"), 10, 64); err == nil {
-		in.UserID = uid
+	if idStr := c.Param("id"); idStr != "" {
+		if uid, err := strconv.ParseUint(idStr, 10, 64); err == nil {
+			in.UserID = uid
+		}
+	}
+	if in.UserID == 0 {
+		if uid, err := strconv.ParseUint(c.Query("user_id"), 10, 64); err == nil {
+			in.UserID = uid
+		}
 	}
 	if in.Page < 1 {
 		in.Page = 1
