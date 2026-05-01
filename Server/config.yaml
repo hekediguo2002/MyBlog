@@ -1,0 +1,34 @@
+server:
+  addr: ":8080"
+  static_dir: "../Web"
+  upload_dir: "./uploads"
+  csrf_cookie_secure: false
+
+mysql:
+  dsn: "blog:blog@tcp(127.0.0.1:3306)/blog?charset=utf8mb4&parseTime=true&loc=Local"
+
+redis:
+  addr: "127.0.0.1:6379"
+  db: 0
+
+session:
+  cookie_name: "sid"
+  ttl_minutes: 30
+  cookie_secret: "CHANGE_ME_32_BYTES_HEX_DEVONLY!!"
+
+upload:
+  max_bytes: 5242880
+  allowed_ext: ["jpg","jpeg","png","gif","webp"]
+
+ratelimit:
+  login_per_min: 5
+  upload_per_min: 10
+  global_per_min: 300
+
+view_flush:
+  interval_seconds: 30
+  batch_size: 1000
+
+log:
+  level: "info"
+  file: "./logs/server.log"

@@ -1,0 +1,6 @@
+/bin/
+/uploads/
+/logs/
+/.env
+*.log
+.DS_Store
