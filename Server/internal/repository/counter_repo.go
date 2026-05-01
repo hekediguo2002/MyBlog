@@ -13,7 +13,7 @@ import (
 type CounterRepo interface {
 	Inc(ctx context.Context, articleID uint64) error
 	GetIncrement(ctx context.Context, articleID uint64) (int64, error)
-	DirtyMembers(ctx context.Context) ([]string, error)
+	DirtyMembers(ctx context.Context) ([]uint64, error)
 	DrainIncrement(ctx context.Context, articleID uint64) (int64, error)
 	Ack(ctx context.Context, ids []uint64) error
 	Restore(ctx context.Context, articleID uint64, delta int64) error
@@ -47,12 +47,18 @@ func (r *counterRepo) GetIncrement(ctx context.Context, id uint64) (int64, error
 	return v, nil
 }
 
-func (r *counterRepo) DirtyMembers(ctx context.Context) ([]string, error) {
+func (r *counterRepo) DirtyMembers(ctx context.Context) ([]uint64, error) {
 	out, err := r.rdb.SMembers(ctx, keyDirty()).Result()
 	if err != nil {
 		return nil, apperr.Wrap(apperr.CodeRedisError, "smembers dirty", err)
 	}
-	return out, nil
+	ids := make([]uint64, 0, len(out))
+	for _, s := range out {
+		if id, err := strconv.ParseUint(s, 10, 64); err == nil {
+			ids = append(ids, id)
+		}
+	}
+	return ids, nil
 }
 
 func (r *counterRepo) DrainIncrement(ctx context.Context, id uint64) (int64, error) {
