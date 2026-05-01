@@ -11,6 +11,7 @@ const (
 	CodeDBError      = 3001
 	CodeUsernameTaken = 1010
 	CodeUnknown      = 5099
+	CodeNotFound     = 4040
 )
 
 type AppErr struct {
@@ -57,6 +58,8 @@ func httpFor(code int) int {
 		return 401
 	case CodeDBError, CodeUnknown:
 		return 500
+	case CodeNotFound:
+		return 404
 	default:
 		return 500
 	}
