@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"os"
-	"sort"
 	"testing"
 
 	"github.com/redis/go-redis/v9"
@@ -38,8 +37,7 @@ func TestCounterRepo_IncAndGet(t *testing.T) {
 
 	dirty, err := c.DirtyMembers(ctx)
 	require.NoError(t, err)
-	sort.Strings(dirty)
-	require.Equal(t, []string{"42", "43"}, dirty)
+	require.ElementsMatch(t, []uint64{42, 43}, dirty)
 }
 
 func TestCounterRepo_DrainAndAck(t *testing.T) {

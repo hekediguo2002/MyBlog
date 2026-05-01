@@ -1,4 +1,4 @@
-.PHONY: run test integration build migrate-up lint deps
+.PHONY: run test integration build migrate-up lint deps docker-up docker-down
 
 deps:
 	go mod tidy
@@ -7,10 +7,10 @@ run:
 	go run ./cmd/server
 
 test:
-	go test ./internal/... -race -count=1
+	go test ./... -race -count=1
 
 integration:
-	go test ./test/integration/... -race -count=1 -timeout 5m
+	go test -tags=integration ./test/integration/... -race -count=1 -timeout 5m
 
 build:
 	go build -o bin/server ./cmd/server
@@ -24,3 +24,9 @@ migrate-up:
 
 lint:
 	golangci-lint run ./...
+
+docker-up:
+	docker compose up -d
+
+docker-down:
+	docker compose down
