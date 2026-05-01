@@ -48,7 +48,7 @@ func (r *articleRepo) Update(ctx context.Context, a *model.Article, tags []model
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		res := tx.Model(&model.Article{}).
 			Where("id = ?", a.ID).
-			Updates(map[string]any{"title": a.Title, "content": a.Content})
+			Updates(map[string]any{"title": a.Title, "content": a.Content, "summary": a.Summary})
 		if res.Error != nil {
 			return apperr.Wrap(apperr.CodeDBError, "update article", res.Error)
 		}

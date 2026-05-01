@@ -11,6 +11,7 @@ type Article struct {
 	UserID    uint64         `gorm:"index:idx_user_id;column:user_id"`
 	Title     string         `gorm:"size:200;column:title"`
 	Content   string         `gorm:"type:mediumtext;column:content"`
+	Summary   string         `gorm:"size:500;column:summary"`
 	ViewCount uint64         `gorm:"column:view_count;default:0"`
 	Status    int8           `gorm:"column:status;default:1"`
 	CreatedAt time.Time      `gorm:"column:created_at"`

@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS articles (
   user_id     BIGINT UNSIGNED NOT NULL,
   title       VARCHAR(200)    NOT NULL,
   content     MEDIUMTEXT      NOT NULL,
+  summary     VARCHAR(500)    NOT NULL DEFAULT '',
   view_count  BIGINT UNSIGNED NOT NULL DEFAULT 0,
   status      TINYINT         NOT NULL DEFAULT 1,
   created_at  DATETIME        NOT NULL,
