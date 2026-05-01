@@ -107,3 +107,34 @@ func SessionFromContext(c *gin.Context) (Session, bool) {
 	s, ok := v.(Session)
 	return s, ok
 }
+
+// WithSession 在每次请求开始时尝试从 Cookie 读取 sid;若有效则:
+//   1) 注入 Session 到 context
+//   2) 触发 Touch (滑动续期)
+//   3) 重新下发 Set-Cookie 让浏览器同步刷新 Max-Age
+// 失败/无 cookie 则不注入,后续 RequireAuth 中间件自行返回 2001。
+func (s *SessionStore) WithSession(secureCookies bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sid, err := c.Cookie(CookieSID)
+		if err != nil || sid == "" {
+			c.Next()
+			return
+		}
+		sess, err := s.Get(c.Request.Context(), sid)
+		if err != nil {
+			c.Next()
+			return
+		}
+		csrf, err := s.GetCSRF(c.Request.Context(), sid)
+		if err != nil {
+			c.Next()
+			return
+		}
+		_ = s.Touch(c.Request.Context(), sid)
+		SetSessionCookies(c, sid, csrf, s.TTLSeconds(), secureCookies)
+		AttachSession(c, *sess)
+		c.Set("blog.sid", sid)
+		c.Set("blog.csrf", csrf)
+		c.Next()
+	}
+}
