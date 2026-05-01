@@ -5,9 +5,12 @@ import (
 )
 
 const (
-	CodeInvalidParam  = 1001
-	CodeUnauthorized  = 2001
-	CodeDBError       = 3001
+	CodeOK           = 0
+	CodeInvalidParam = 1001
+	CodeUnauthorized = 2001
+	CodeDBError      = 3001
+	CodeUsernameTaken = 1010
+	CodeUnknown      = 5099
 )
 
 type AppErr struct {
@@ -44,11 +47,15 @@ func Wrap(code int, msg string, cause error) *AppErr {
 
 func httpFor(code int) int {
 	switch code {
+	case CodeOK:
+		return 200
 	case CodeInvalidParam:
 		return 400
+	case CodeUsernameTaken:
+		return 409
 	case CodeUnauthorized:
 		return 401
-	case CodeDBError:
+	case CodeDBError, CodeUnknown:
 		return 500
 	default:
 		return 500
