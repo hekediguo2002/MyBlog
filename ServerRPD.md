@@ -1,5 +1,4 @@
 # Server.md — 博客平台后端 PRD
-
 > 面向：Go 后端开发者
 > 配套前端文档：`WebPRD.md`
 > 代码目录：`/Server/`
