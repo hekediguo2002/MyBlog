@@ -4,7 +4,7 @@ server:
   upload_dir: "./uploads"
   csrf_cookie_secure: false
 
-mysql:
+db:
   dsn: "host=127.0.0.1 port=5432 user=blog password=blog dbname=blog sslmode=disable TimeZone=Asia/Shanghai"
 
 redis:

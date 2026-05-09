@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	Server    ServerCfg    `mapstructure:"server"`
-	MySQL     MySQLCfg     `mapstructure:"mysql"`
+	DB        DBCfg        `mapstructure:"db"`
 	Redis     RedisCfg     `mapstructure:"redis"`
 	Session   SessionCfg   `mapstructure:"session"`
 	Upload    UploadCfg    `mapstructure:"upload"`
@@ -24,7 +24,7 @@ type ServerCfg struct {
 	UploadDir        string `mapstructure:"upload_dir"`
 	CSRFCookieSecure bool   `mapstructure:"csrf_cookie_secure"`
 }
-type MySQLCfg struct{ DSN string `mapstructure:"dsn"` }
+type DBCfg struct{ DSN string `mapstructure:"dsn"` }
 type RedisCfg struct {
 	Addr string `mapstructure:"addr"`
 	DB   int    `mapstructure:"db"`
@@ -62,7 +62,7 @@ func Load(path string) (*Config, error) {
 	v.AutomaticEnv()
 	bind := []string{
 		"server.addr", "server.static_dir", "server.upload_dir", "server.csrf_cookie_secure",
-		"mysql.dsn", "redis.addr", "redis.db",
+		"db.dsn", "redis.addr", "redis.db",
 		"session.cookie_name", "session.ttl_minutes", "session.cookie_secret",
 		"log.level", "log.file",
 	}

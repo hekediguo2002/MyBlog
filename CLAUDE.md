@@ -30,7 +30,7 @@ make lint                   # golangci-lint run ./...
 make migrate-up             # Apply migrations/*.up.sql via psql
 
 # Dependencies (Docker)
-make docker-up              # docker compose up -d (MySQL + Redis)
+make docker-up              # docker compose up -d (PostgreSQL + Redis)
 make docker-down            # docker compose down
 ```
 
@@ -71,14 +71,14 @@ Private: POST /api/v1/articles, /api/v1/uploads/image
 Private routes require `RequireAuth` + `CSRFGuard` + per-user rate limiting.
 
 ### Database
-- **PostgreSQL** (not MySQL). `internal/db/mysql.go` retains its filename for historical reasons but uses `gorm.io/driver/postgres`.
+- **PostgreSQL** 16+. Driver: `gorm.io/driver/postgres`.
 - Auto-migration runs on startup (`gdb.AutoMigrate`).
-- `docker-compose.yml` only provides MySQL + Redis. For local dev, start PostgreSQL separately or use an existing instance (e.g. Postgres.app on macOS).
+- `docker-compose.yml` provides PostgreSQL + Redis.
 
 ### Configuration
 `Server/config.yaml`. Override path with `BLOG_CONFIG` env var. Key fields:
 - `server.static_dir: "../Web"` — Points to frontend files relative to `Server/`.
-- `mysql.dsn` — Actually a PostgreSQL DSN (host, port, user, password, dbname, sslmode).
+- `db.dsn` — PostgreSQL DSN (host, port, user, password, dbname, sslmode).
 
 ## Frontend Architecture
 
@@ -100,10 +100,10 @@ Zero-build. HTML pages are served directly by Gin's `StaticFile`/`Static`. Each 
 Standard Go tests alongside source files (`*_test.go`). Run with `make test`.
 
 ### Integration Tests
-In `Server/test/integration/e2e_test.go`. Uses `testcontainers-go` to spin up MySQL and Redis containers. Marked with `//go:build integration`. Requires Docker. Run with `make integration`.
+In `Server/test/integration/e2e_test.go`. Uses `testcontainers-go` to spin up PostgreSQL and Redis containers. Marked with `//go:build integration`. Requires Docker. Run with `make integration`.
 
 ## Important Notes
 
-- The `docker-compose.yml` in `Server/` launches MySQL (port 3306) and Redis (port 6379), but the application connects to PostgreSQL (port 5432). Ensure PostgreSQL is available separately.
+- The `docker-compose.yml` in `Server/` launches PostgreSQL (port 5432) and Redis (port 6379).
 - Frontend static files are served from `../Web` relative to the `Server/` working directory. If the binary is moved, `static_dir` in config must be updated.
 - Uploads are stored in `Server/uploads/` and served at `/uploads/`.

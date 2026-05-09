@@ -19,7 +19,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/modules/mysql"
+	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/modules/redis"
 
 	"github.com/wjr/blog/server/internal/cache"
@@ -32,18 +32,18 @@ import (
 	"github.com/wjr/blog/server/internal/service"
 )
 
-func startStack(t *testing.T) (mysqlDSN string, redisAddr string) {
+func startStack(t *testing.T) (pgDSN string, redisAddr string) {
 	t.Helper()
 	ctx := context.Background()
-	myc, err := mysql.RunContainer(ctx,
-		testcontainers.WithImage("mysql:8.0"),
-		mysql.WithDatabase("blog"),
-		mysql.WithUsername("blog"),
-		mysql.WithPassword("blog"),
+	pgc, err := postgres.RunContainer(ctx,
+		testcontainers.WithImage("postgres:16-alpine"),
+		postgres.WithDatabase("blog"),
+		postgres.WithUsername("blog"),
+		postgres.WithPassword("blog"),
 	)
 	require.NoError(t, err)
-	t.Cleanup(func() { _ = myc.Terminate(ctx) })
-	mysqlDSN, err = myc.ConnectionString(ctx, "parseTime=true&charset=utf8mb4")
+	t.Cleanup(func() { _ = pgc.Terminate(ctx) })
+	pgDSN, err = pgc.ConnectionString(ctx, "sslmode=disable")
 	require.NoError(t, err)
 
 	rc, err := redis.RunContainer(ctx, testcontainers.WithImage("redis:7-alpine"))

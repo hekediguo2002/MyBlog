@@ -27,8 +27,8 @@
 |---|---|---|
 | 语言 | Go 1.22+ | |
 | Web 框架 | `gin-gonic/gin` | |
-| ORM | `gorm.io/gorm` + `gorm.io/driver/mysql` | |
-| 数据库 | MySQL 8（InnoDB, utf8mb4） | |
+| ORM | `gorm.io/gorm` + `gorm.io/driver/postgres` | |
+| 数据库 | PostgreSQL 16 | |
 | 缓存/计数 | Redis 7（`go-redis/redis/v9`） | |
 | Session | `gin-contrib/sessions` + Redis store | |
 | 密码 | `golang.org/x/crypto/bcrypt`（cost=12） | |
@@ -44,7 +44,7 @@ Server/
 ├─ cmd/server/main.go              # 入口，加载配置 / 初始化 / 启动
 ├─ internal/
 │  ├─ config/                      # 配置结构 + 加载
-│  ├─ db/                          # MySQL 初始化
+│  ├─ db/                          # PostgreSQL 初始化
 │  ├─ cache/                       # Redis 初始化
 │  ├─ middleware/
 │  │  ├─ recover.go
@@ -92,7 +92,7 @@ Server/
 ├─ config.yaml                     # 默认配置
 ├─ go.mod / go.sum
 ├─ Makefile
-└─ docker-compose.yml              # 本地起 MySQL + Redis
+└─ docker-compose.yml              # 本地起 PostgreSQL + Redis
 ```
 
 ### 3.1 分层职责
@@ -447,7 +447,7 @@ service 抛 AppErr，handler 通过中间件统一渲染。
 
 ### 9.2 集成测试
 - 目录：`Server/test/integration/`
-- 工具：`testcontainers-go` 启 MySQL + Redis
+- 工具：`testcontainers-go` 启 PostgreSQL + Redis
 - 跑全部 API 主路径：注册→登录→发布→列表→详情(计数+1)→编辑→删除→退出
 - CI 必跑，超时 5 分钟
 
@@ -463,8 +463,8 @@ service 抛 AppErr，handler 通过中间件统一渲染。
 | 故障 | 应对 |
 |---|---|
 | Redis 不可用 | 计数累加直接跳过 + log warn；session 缺失视作未登录；限流退化为放过 |
-| MySQL 慢查询 | 200ms 报 warn；连接池满返回 5001 |
-| MySQL 不可用 | 5001 + 频繁告警；进程不主动退出，等运维介入 |
+| PostgreSQL 慢查询 | 200ms 报 warn；连接池满返回 5001 |
+| PostgreSQL 不可用 | 5001 + 频繁告警；进程不主动退出，等运维介入 |
 | 上传文件写入失败 | 返回 5099；已落盘半截文件由启动时清扫 |
 | Panic | gin.Recovery 接住，日志含 stack，返回 5099 |
 | 服务重启 | 优雅停机：context 取消 → 等正在执行请求结束 ≤ 30s → 触发一次计数 flush → 退出 |
@@ -478,8 +478,8 @@ server:
   upload_dir: "./uploads"
   csrf_cookie_secure: false  # prod 改 true
 
-mysql:
-  dsn: "blog:blog@tcp(127.0.0.1:3306)/blog?charset=utf8mb4&parseTime=true&loc=Local"
+db:
+  dsn: "host=127.0.0.1 port=5432 user=blog password=blog dbname=blog sslmode=disable TimeZone=Asia/Shanghai"
 
 redis:
   addr: "127.0.0.1:6379"
@@ -508,7 +508,7 @@ log:
   file: "./logs/server.log"
 ```
 
-环境变量优先级最高，例如 `MYSQL_DSN` 覆盖 `mysql.dsn`。
+环境变量优先级最高，例如 `DB_DSN` 覆盖 `db.dsn`。
 
 ## 12. Makefile 目标
 

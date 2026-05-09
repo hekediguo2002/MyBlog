@@ -10,6 +10,7 @@
 - **图片上传**：支持多种图片格式，大小限制 5MB
 - **浏览计数**：基于 Redis 的高性能浏览量统计
 - **限流保护**：登录和上传接口限流
+- **管理员系统**：内置管理员账号，支持用户列表查看和级联删除
 
 ## 技术栈
 
@@ -26,7 +27,7 @@
 ### 环境要求
 
 - Go 1.20+
-- MySQL 8.0+
+- PostgreSQL 16+
 - Redis 7.0+
 - Docker & Docker Compose（可选，用于快速启动依赖服务）
 
@@ -37,16 +38,15 @@ cd Server
 make docker-up
 ```
 
-这将启动 MySQL（端口 3306）和 Redis（端口 6379）。
+这将启动 PostgreSQL（端口 5432）和 Redis（端口 6379）。
 
 ### 手动启动依赖
 
-**MySQL**:
+**PostgreSQL**:
 ```bash
-# 创建数据库
-CREATE DATABASE blog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'blog'@'localhost' IDENTIFIED BY 'blog';
-GRANT ALL PRIVILEGES ON blog.* TO 'blog'@'localhost';
+# 创建数据库和用户
+createuser blog -P   # 密码设为 blog
+createdb blog -O blog
 ```
 
 **Redis**:
@@ -79,11 +79,11 @@ make build
 ├── Server/                    # 后端代码
 │   ├── cmd/server/           # 入口文件
 │   ├── internal/             # 内部模块
-│   │   ├── handler/          # HTTP 处理器
-│   │   ├── service/          # 业务逻辑层
+│   │   ├── handler/          # HTTP 处理器（含 admin_handler）
+│   │   ├── service/          # 业务逻辑层（含 admin_service）
 │   │   ├── repository/       # 数据访问层
 │   │   ├── model/            # 数据库模型
-│   │   ├── middleware/       # 中间件
+│   │   ├── middleware/       # 中间件（含 RequireAdmin）
 │   │   ├── config/           # 配置管理
 │   │   ├── db/               # 数据库连接
 │   │   ├── cache/            # Redis 缓存
@@ -94,9 +94,13 @@ make build
 │   ├── docker-compose.yml    # Docker Compose 配置
 │   └── Makefile              # 构建脚本
 ├── Web/                      # 前端代码
-│   ├── assets/               # 静态资源
+│   ├── assets/
+│   │   ├── css/              # 样式表
+│   │   └── js/
+│   │       ├── pages/        # 页面脚本（含 admin.js）
+│   │       └── components/   # 公共组件（navbar, pager, toast 等）
 │   ├── vendor/               # 第三方依赖
-│   └── *.html                # 页面模板
+│   └── *.html                # 页面模板（含 admin.html）
 ├── ServerRPD.md              # 后端设计文档
 ├── WebPRD.md                 # 前端设计文档
 └── README.md                 # 项目说明
@@ -135,6 +139,15 @@ make build
 |------|------|------|
 | `/api/v1/uploads/image` | POST | 上传图片 |
 
+### 管理员（需管理员权限）
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/api/v1/admin/users` | GET | 获取所有注册用户列表 |
+| `/api/v1/admin/users/:id` | DELETE | 级联删除用户及其文章 |
+
+> 管理员为内置固定账号：`sysadmin` / `admin111`，不在数据库中，不出现于用户列表。
+
 ## 测试
 
 ### 单元测试
@@ -161,7 +174,7 @@ server:
   static_dir: "../Web"    # 前端静态文件目录
   upload_dir: "./uploads" # 上传文件目录
 
-postgres:
+db:
   dsn: "host=127.0.0.1 port=5432 user=blog password=blog dbname=blog sslmode=disable TimeZone=Asia/Shanghai"
 
 redis:

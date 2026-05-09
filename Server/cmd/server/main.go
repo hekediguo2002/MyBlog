@@ -53,7 +53,7 @@ func main() {
 		log.Fatal().Err(err).Msg("load config")
 	}
 
-	gdb, err := db.Open(db.DefaultOptions(cfg.MySQL.DSN))
+	gdb, err := db.Open(db.DefaultOptions(cfg.DB.DSN))
 	if err != nil {
 		log.Fatal().Err(err).Msg("open db")
 	}

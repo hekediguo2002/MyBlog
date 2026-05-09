@@ -14,8 +14,8 @@ func TestLoad_ReadsYAML(t *testing.T) {
 	require.NoError(t, os.WriteFile(yamlPath, []byte(`
 server:
   addr: ":9090"
-mysql:
-  dsn: "u:p@tcp(127.0.0.1:3306)/db?parseTime=true"
+db:
+  dsn: "host=127.0.0.1 port=5432 user=blog dbname=blog sslmode=disable"
 redis:
   addr: "127.0.0.1:6379"
 session:
@@ -48,7 +48,7 @@ func TestLoad_EnvOverridesYAML(t *testing.T) {
 	yamlPath := filepath.Join(dir, "config.yaml")
 	require.NoError(t, os.WriteFile(yamlPath, []byte(`
 server: { addr: ":9090" }
-mysql:   { dsn: "from-yaml" }
+db:      { dsn: "from-yaml" }
 redis:   { addr: "127.0.0.1:6379" }
 session: { cookie_name: "sid", ttl_minutes: 30, cookie_secret: "x" }
 upload:  { max_bytes: 1, allowed_ext: ["png"] }
@@ -56,9 +56,9 @@ ratelimit: { login_per_min: 5, upload_per_min: 10, global_per_min: 300 }
 view_flush: { interval_seconds: 30, batch_size: 1000 }
 log: { level: "info" }
 `), 0o644))
-	t.Setenv("MYSQL_DSN", "from-env")
+	t.Setenv("DB_DSN", "from-env")
 
 	cfg, err := Load(yamlPath)
 	require.NoError(t, err)
-	require.Equal(t, "from-env", cfg.MySQL.DSN)
+	require.Equal(t, "from-env", cfg.DB.DSN)
 }
