@@ -15,6 +15,7 @@ type Deps struct {
 	Article         *handler.ArticleHandler
 	Tag             *handler.TagHandler
 	Upload          *handler.UploadHandler
+	Admin           *handler.AdminHandler
 	Sessions        *middleware.SessionStore
 	RDB             *redis.Client
 	StaticWebDir    string
@@ -39,6 +40,7 @@ func New(d Deps) *gin.Engine {
 	r.StaticFile("/detail.html", d.StaticWebDir+"/detail.html")
 	r.StaticFile("/editor.html", d.StaticWebDir+"/editor.html")
 	r.StaticFile("/profile.html", d.StaticWebDir+"/profile.html")
+	r.StaticFile("/admin.html", d.StaticWebDir+"/admin.html")
 
 	api := r.Group("/api/v1")
 	api.Use(d.Sessions.WithSession(d.SecureCookies))
@@ -60,6 +62,11 @@ func New(d Deps) *gin.Engine {
 	priv.PUT("/articles/:id", d.Article.Update)
 	priv.DELETE("/articles/:id", d.Article.Delete)
 	priv.POST("/uploads/image", d.Upload.Image)
+
+	admin := api.Group("/admin", middleware.RequireAdmin(), middleware.CSRFGuard(),
+		middleware.RateLimit(d.RDB, d.RateLimitUser))
+	admin.GET("/users", d.Admin.ListUsers)
+	admin.DELETE("/users/:id", d.Admin.DeleteUser)
 
 	return r
 }

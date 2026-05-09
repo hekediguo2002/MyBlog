@@ -45,11 +45,17 @@ import { showToast } from '../components/toast.js';
     submitBtn.innerHTML = '<span>登录中…</span>';
 
     try {
-      await post('/auth/login', { username, password });
+      const data = await post('/auth/login', { username, password });
       const params = new URLSearchParams(location.search);
-      const redirect = params.get('redirect') || '/list.html';
+      const redirect = params.get('redirect');
       showToast({ type: 'success', text: '登录成功' });
-      setTimeout(() => { location.href = redirect; }, 400);
+      setTimeout(() => {
+        if (data && data.isAdmin) {
+          location.href = '/admin.html';
+        } else {
+          location.href = redirect || '/list.html';
+        }
+      }, 400);
     } catch (err) {
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<span>进入主页</span><span>→</span>';

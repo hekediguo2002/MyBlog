@@ -49,6 +49,22 @@ func (f *fakeUserRepo) FindByID(_ context.Context, id uint64) (*model.User, erro
 	}
 	return u, nil
 }
+func (f *fakeUserRepo) ListAll(_ context.Context) ([]model.User, error) {
+	out := make([]model.User, 0, len(f.byID))
+	for _, u := range f.byID {
+		out = append(out, *u)
+	}
+	return out, nil
+}
+func (f *fakeUserRepo) HardDelete(_ context.Context, id uint64) error {
+	u, ok := f.byID[id]
+	if !ok {
+		return apperr.New(apperr.CodeNotFound, "用户不存在")
+	}
+	delete(f.byID, u.ID)
+	delete(f.byUsername, u.Username)
+	return nil
+}
 
 func TestAuthService_Register_Success(t *testing.T) {
 	repo := newFakeUserRepo()

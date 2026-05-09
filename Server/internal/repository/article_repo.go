@@ -24,6 +24,7 @@ type ArticleRepo interface {
 	FindByID(ctx context.Context, id uint64) (*model.Article, error)
 	List(ctx context.Context, q ListQuery) ([]model.Article, int64, error)
 	IncrementViewCount(ctx context.Context, id uint64, delta int64) error
+	HardDeleteByUserID(ctx context.Context, userID uint64) error
 }
 
 type articleRepo struct{ db *gorm.DB }
@@ -130,6 +131,20 @@ func (r *articleRepo) IncrementViewCount(ctx context.Context, id uint64, delta i
 		UpdateColumn("view_count", gorm.Expr("view_count + ?", delta))
 	if res.Error != nil {
 		return apperr.Wrap(apperr.CodeDBError, "incr view count", res.Error)
+	}
+	return nil
+}
+
+func (r *articleRepo) HardDeleteByUserID(ctx context.Context, userID uint64) error {
+	// Delete article_tags associations first to avoid FK violation
+	if err := r.db.WithContext(ctx).Exec(
+		"DELETE FROM article_tags WHERE article_id IN (SELECT id FROM articles WHERE user_id = ?)",
+		userID,
+	).Error; err != nil {
+		return apperr.Wrap(apperr.CodeDBError, "hard delete article tags by user", err)
+	}
+	if err := r.db.WithContext(ctx).Unscoped().Where("user_id = ?", userID).Delete(&model.Article{}).Error; err != nil {
+		return apperr.Wrap(apperr.CodeDBError, "hard delete articles by user", err)
 	}
 	return nil
 }

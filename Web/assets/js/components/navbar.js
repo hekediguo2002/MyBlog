@@ -9,7 +9,7 @@ function createEl(tag, cls, text) {
   return el;
 }
 
-export async function renderNavbar(mountId = 'navbar-mount') {
+export async function renderNavbar(mountId = 'navbar-mount', opts = {}) {
   const mount = document.getElementById(mountId);
   if (!mount) return;
 
@@ -34,19 +34,30 @@ export async function renderNavbar(mountId = 'navbar-mount') {
   const right = createEl('div', 'navbar-right');
 
   if (user) {
-    const writeBtn = createEl('a', 'btn btn-primary btn-sm');
-    writeBtn.href = '/editor.html';
-    writeBtn.textContent = '写文章';
-    right.appendChild(writeBtn);
+    if (user.isAdmin && !opts.hideAdmin) {
+      const adminBtn = createEl('a', 'btn btn-secondary btn-sm');
+      adminBtn.href = '/admin.html';
+      adminBtn.textContent = '用户管理';
+      right.appendChild(adminBtn);
+    }
+
+    if (!opts.hideWrite) {
+      const writeBtn = createEl('a', 'btn btn-primary btn-sm');
+      writeBtn.href = '/editor.html';
+      writeBtn.textContent = '写文章';
+      right.appendChild(writeBtn);
+    }
 
     const userBtn = createEl('div', 'nav-user');
     const uAv = createEl('span', 'u-av', (user.name || user.username || '?').slice(0, 1).toUpperCase());
     const uName = createEl('span', '', user.name || user.username);
     userBtn.appendChild(uAv);
     userBtn.appendChild(uName);
-    userBtn.addEventListener('click', () => {
-      location.href = '/profile.html';
-    });
+    if (!user.isAdmin) {
+      userBtn.addEventListener('click', () => {
+        location.href = '/profile.html';
+      });
+    }
     right.appendChild(userBtn);
 
     const logoutBtn = createEl('button', 'btn btn-secondary btn-sm');

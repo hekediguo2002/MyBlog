@@ -674,6 +674,55 @@ input, textarea { font-family: inherit; font-size: 1rem; color: #F5F5F0; backgro
 .markdown-body th, .markdown-body td { border: 1px solid #26283A; padding: 0.5rem 0.75rem; }
 .markdown-body th { background: #1A1B26; font-weight: 600; }
 
+/* ── Admin table ── */
+.admin-row {
+  display: flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #26283A;
+  font-size: 0.875rem;
+  color: #F5F5F0;
+  gap: 1rem;
+}
+.admin-row:last-child {
+  border-bottom: none;
+}
+.admin-header {
+  background: #1A1B26;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #5A5C68;
+  letter-spacing: 1.5px;
+}
+.admin-row span {
+  flex: 1;
+  min-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-row span:first-child {
+  flex: 0 0 70px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+.admin-row span:nth-child(2) {
+  flex: 1 1 160px;
+}
+.admin-row span:nth-child(3) {
+  flex: 2 1 200px;
+  font-weight: 500;
+  color: #F5F5F0;
+}
+.admin-row span:nth-child(4) {
+  flex: 0 0 130px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  color: #9A9CA8;
+}
+.admin-row span:last-child {
+  flex: 0 0 80px;
+}
+
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .list-body { flex-direction: column; }

@@ -14,8 +14,9 @@ import (
 )
 
 type Session struct {
-	UserID uint64 `json:"uid"`
-	Name   string `json:"name"`
+	UserID  uint64 `json:"uid"`
+	Name    string `json:"name"`
+	IsAdmin bool   `json:"isAdmin"`
 }
 
 type SessionStore struct {

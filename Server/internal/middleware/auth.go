@@ -16,3 +16,20 @@ func RequireAuth() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func RequireAdmin() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sess, ok := SessionFromContext(c)
+		if !ok {
+			httpresp.Fail(c, apperr.New(apperr.CodeUnauthorized, "未登录"))
+			c.Abort()
+			return
+		}
+		if !sess.IsAdmin {
+			httpresp.Fail(c, apperr.New(apperr.CodeForbidden, "无权访问"))
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}

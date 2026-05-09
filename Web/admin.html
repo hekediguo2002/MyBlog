@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户管理 · 小绿书</title>
+  <link rel="stylesheet" href="assets/css/main.css?v=6">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <div class="page-wrapper">
+    <div class="container" style="padding-top:3rem;padding-bottom:4rem">
+      <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2.5rem">
+        <span class="hero-kicker">管理后台</span>
+        <h1 class="hero-title" style="font-size:3rem">用户管理</h1>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div id="user-table">
+          <div class="admin-row admin-header">
+            <span>用户ID</span>
+            <span>用户名</span>
+            <span>昵称</span>
+            <span>注册时间</span>
+            <span style="text-align:right">操作</span>
+          </div>
+          <div id="user-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer">
+      <span class="ftL">&copy; 2026 小绿书 &middot; 在公网上写下去</span>
+      <span class="ftL">v0.4.7 &middot; 管理后台</span>
+    </div>
+  </div>
+  <script type="module" src="assets/js/pages/admin.js?v=6"></script>
+</body>
+</html>

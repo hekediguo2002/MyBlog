@@ -2,7 +2,7 @@
 > 面向：Go 后端开发者
 > 配套前端文档：`WebPRD.md`
 > 代码目录：`/Server/`
-> 日期：2026-05-01
+> 日期：2026-05-09
 
 ## 1. 背景与目标
 
@@ -51,7 +51,7 @@ Server/
 │  │  ├─ logger.go
 │  │  ├─ session.go
 │  │  ├─ csrf.go
-│  │  ├─ auth.go                   # 鉴权中间件
+│  │  ├─ auth.go                   # 鉴权中间件（RequireAuth、RequireAdmin）
 │  │  └─ ratelimit.go
 │  ├─ model/                       # GORM 模型
 │  │  ├─ user.go
@@ -65,12 +65,14 @@ Server/
 │  │  └─ counter_repo.go           # Redis 浏览计数
 │  ├─ service/                     # 业务层
 │  │  ├─ auth_service.go
+│  │  ├─ admin_service.go          # 管理员业务（用户列表、级联删除）
 │  │  ├─ article_service.go
 │  │  ├─ tag_service.go
 │  │  ├─ upload_service.go
 │  │  └─ view_counter_service.go   # 计数回写后台
 │  ├─ handler/                     # HTTP 入口（gin Handler）
 │  │  ├─ auth_handler.go
+│  │  ├─ admin_handler.go          # 管理员 API（ListUsers、DeleteUser）
 │  │  ├─ article_handler.go
 │  │  ├─ tag_handler.go
 │  │  └─ upload_handler.go
@@ -120,7 +122,7 @@ Server/
 ```
 响应 data：
 ```json
-{ "id": 1, "username": "alice", "name": "爱丽丝" }
+{ "id": 1, "username": "alice", "name": "爱丽丝", "isAdmin": false }
 ```
 副作用：注册成功后立即建立 Session，与 `/auth/login` 同样下发 `sid` Cookie + `csrf_token` Cookie。
 错误：`1001` 参数无效；`1010` 用户名已存在。
@@ -132,8 +134,9 @@ Server/
 ```
 响应 data：
 ```json
-{ "id": 1, "username": "alice", "name": "爱丽丝" }
+{ "id": 1, "username": "alice", "name": "爱丽丝", "isAdmin": false }
 ```
+**管理员登录**：内置固定账号 `sysadmin` / `admin111`，不在数据库中。登录后 `isAdmin` 为 `true`、`id=0`、`name="系统管理员"`，Session 中 `IsAdmin=true`。管理员不注册、不出现于用户列表。
 副作用：种 Session Cookie + CSRF Cookie。
 错误：`2010` 账号或密码错误；`2020` 频次超限。
 
@@ -142,7 +145,7 @@ Server/
 副作用：删除 Redis `sess:<sid>` 与 `csrf:<sid>`；下发 `Max-Age=0` 的 `sid` 与 `csrf_token` 同名空 Cookie 强制浏览器清除。
 
 #### GET /api/v1/auth/me
-未登录返回 `2001`；已登录返回当前用户。
+未登录返回 `2001`；已登录返回当前用户（含 `isAdmin` 字段）。管理员登录时返回 `{"id":0, "username":"sysadmin", "name":"系统管理员", "isAdmin":true}`。
 
 ### 4.2 文章
 
@@ -226,7 +229,25 @@ Server/
 响应 data：`{ "url": "/uploads/2026/05/abc.png" }`。
 错误：`1020` 类型不支持；`1021` 文件过大。
 
-### 4.5 静态资源
+### 4.5 管理员
+
+#### GET /api/v1/admin/users
+鉴权：管理员。返回所有注册用户列表。
+响应 data：
+```json
+[
+  {"id": 2, "username": "alice", "name": "Alice", "created_at": 1714521600},
+  {"id": 3, "username": "bob", "name": "Bob", "created_at": 1714608000}
+]
+```
+错误：`2001` 未登录；`2002` 非管理员。
+
+#### DELETE /api/v1/admin/users/:id
+鉴权：管理员。级联硬删除该用户及其全部文章（使用数据库事务，不可恢复）。
+响应 data：null。
+错误：`1030` 用户不存在；`2001` 未登录；`2002` 非管理员。
+
+### 4.6 静态资源
 - `GET /uploads/*` → `./uploads/`（gin.Static）
 - `GET /` → `./Web/index.html`
 - `GET /<file>` → `./Web/<file>`（front 由 gin.NoRoute 兜底，找不到再 404）
@@ -300,12 +321,15 @@ CREATE TABLE article_tags (
 - **会话时长策略**：30 分钟滑动过期（idle timeout）。每一次通过鉴权中间件的请求都把 Session TTL 与 CSRF TTL 重置为 30 分钟。30 分钟内无任何请求 → Redis 键自然过期 → Cookie 失效，下次访问跳登录页。
 - **持久化 Cookie**：登录成功时下发 Cookie 带 `Max-Age=1800`（30 分钟），关闭浏览器后再打开仍可在 30 分钟有效期内免登录直接进入列表。续期时同步刷新 Cookie 的 `Max-Age`，让浏览器侧也跟着延长。
 - **登录流程**：
-  1. handler 校验入参 → service 取 user → bcrypt.CompareHashAndPassword
-  2. 生成 sid（uuid） → 写 Redis `sess:<sid>`（EXPIRE 1800s）存 `{user_id, name}`
-  3. 生成 csrf token，写 `csrf:<sid>`（EXPIRE 1800s）
-  4. 同步两个 Cookie（均设置 `Max-Age=1800`、`Path=/`）：
+  1. handler 校验入参 → 先判断是否为 sysadmin/admin111 硬编码账号（是则直接创建管理员 Session，跳过 DB 查询）
+  2. 否则 service 取 user → bcrypt.CompareHashAndPassword
+  3. 生成 sid（uuid） → 写 Redis `sess:<sid>`（EXPIRE 1800s）存 `{user_id, name, isAdmin}`
+  4. 生成 csrf token，写 `csrf:<sid>`（EXPIRE 1800s）
+  5. 同步两个 Cookie（均设置 `Max-Age=1800`、`Path=/`）：
      - `sid`：HttpOnly, Secure(prod), SameSite=Lax
      - `csrf_token`：非 HttpOnly（前端 JS 可读），SameSite=Lax
+- **Session 结构**：`{user_id uint64, name string, isAdmin bool}`。`isAdmin` 由登录时写入，中间件读取后注入 Gin Context。
+- **管理员中间件 `RequireAdmin`**：从 Context 取出 Session，若 `!IsAdmin` 返回 `2002`。管理员 API 路由组统一使用此中间件。
 - **退出**：`POST /api/v1/auth/logout` 删 Redis 对应键，下发 `Max-Age=0` 的同名空 Cookie 让浏览器清除
 - **鉴权中间件 `auth.go`**：
   ```text
@@ -514,6 +538,11 @@ make lint        # golangci-lint run
 - [ ] 登录后静置 31 分钟 → 任何鉴权请求返回 2001，前端跳登录页
 - [ ] 登录后每隔 25 分钟做一次操作，2 小时后仍处于登录态（验证滑动续期）
 - [ ] 调用 logout → 服务返回成功，浏览器 Cookie 被清除，再访问需登录页面跳转登录
+- [ ] sysadmin / admin111 登录 → 返回 `isAdmin:true`，前端跳 `/admin.html`
+- [ ] sysadmin 调用 GET /api/v1/admin/users → 返回全部注册用户列表
+- [ ] sysadmin 调用 DELETE /api/v1/admin/users/:id → 级联硬删除用户及其文章，再次查询用户不出现
+- [ ] 普通用户调用 GET /api/v1/admin/users → 返回 `{"code":2002,"msg":"无权访问"}`
+- [ ] 普通用户直接访问 `/admin.html` → admin.js 检测非 admin 后跳 `/list.html`
 
 ---
 

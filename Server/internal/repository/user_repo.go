@@ -15,6 +15,8 @@ type UserRepo interface {
 	Create(ctx context.Context, u *model.User) error
 	FindByUsername(ctx context.Context, username string) (*model.User, error)
 	FindByID(ctx context.Context, id uint64) (*model.User, error)
+	ListAll(ctx context.Context) ([]model.User, error)
+	HardDelete(ctx context.Context, id uint64) error
 }
 
 type userRepo struct{ db *gorm.DB }
@@ -51,6 +53,25 @@ func (r *userRepo) FindByID(ctx context.Context, id uint64) (*model.User, error)
 		return nil, apperr.Wrap(apperr.CodeDBError, "find by id", err)
 	}
 	return &u, nil
+}
+
+func (r *userRepo) ListAll(ctx context.Context) ([]model.User, error) {
+	var users []model.User
+	if err := r.db.WithContext(ctx).Order("id ASC").Find(&users).Error; err != nil {
+		return nil, apperr.Wrap(apperr.CodeDBError, "list users", err)
+	}
+	return users, nil
+}
+
+func (r *userRepo) HardDelete(ctx context.Context, id uint64) error {
+	res := r.db.WithContext(ctx).Unscoped().Delete(&model.User{}, id)
+	if res.Error != nil {
+		return apperr.Wrap(apperr.CodeDBError, "hard delete user", res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return apperr.New(apperr.CodeNotFound, "用户不存在")
+	}
+	return nil
 }
 
 func isDuplicate(err error) bool {

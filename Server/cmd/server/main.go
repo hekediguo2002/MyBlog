@@ -72,6 +72,7 @@ func main() {
 	counterRepo := repository.NewCounterRepo(rdb)
 
 	authSvc := service.NewAuthService(userRepo)
+	adminSvc := service.NewAdminService(userRepo, articleRepo)
 	tagSvc := service.NewTagService(tagRepo)
 	articleSvc := service.NewArticleService(articleRepo, tagRepo, userRepo, counterRepo)
 	uploadSvc := service.NewUploadService(service.UploadOptions{
@@ -86,12 +87,14 @@ func main() {
 	articleH := handler.NewArticleHandler(articleSvc)
 	tagH := handler.NewTagHandler(tagSvc)
 	uploadH := handler.NewUploadHandler(uploadSvc)
+	adminH := handler.NewAdminHandler(adminSvc)
 
 	r := router.New(router.Deps{
 		Auth:            authH,
 		Article:         articleH,
 		Tag:             tagH,
 		Upload:          uploadH,
+		Admin:           adminH,
 		Sessions:        sessions,
 		RDB:             rdb,
 		StaticWebDir:    cfg.Server.StaticDir,
