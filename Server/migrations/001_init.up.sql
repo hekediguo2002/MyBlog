@@ -1,43 +1,42 @@
-SET NAMES utf8mb4;
-
 CREATE TABLE IF NOT EXISTS users (
-  id            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  id            BIGSERIAL PRIMARY KEY,
   username      VARCHAR(32)     NOT NULL,
   password_hash CHAR(60)        NOT NULL,
   name          VARCHAR(64)     NOT NULL,
-  created_at    DATETIME        NOT NULL,
-  updated_at    DATETIME        NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY uk_username (username)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  created_at    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE UNIQUE INDEX uk_username ON users(username);
 
 CREATE TABLE IF NOT EXISTS articles (
-  id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  user_id     BIGINT UNSIGNED NOT NULL,
-  title       VARCHAR(200)    NOT NULL,
-  content     MEDIUMTEXT      NOT NULL,
-  summary     VARCHAR(500)    NOT NULL DEFAULT '',
-  view_count  BIGINT UNSIGNED NOT NULL DEFAULT 0,
-  status      TINYINT         NOT NULL DEFAULT 1,
-  created_at  DATETIME        NOT NULL,
-  updated_at  DATETIME        NOT NULL,
-  deleted_at  DATETIME        NULL,
-  PRIMARY KEY (id),
-  KEY idx_user_id (user_id),
-  KEY idx_status_created (status, created_at),
-  KEY idx_deleted_at (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  id          BIGSERIAL PRIMARY KEY,
+  user_id     BIGINT           NOT NULL,
+  title       VARCHAR(200)     NOT NULL,
+  content     TEXT             NOT NULL,
+  summary     VARCHAR(500)     NOT NULL DEFAULT '',
+  view_count  BIGINT           NOT NULL DEFAULT 0,
+  status      SMALLINT         NOT NULL DEFAULT 1,
+  created_at  TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_at  TIMESTAMP        NULL
+);
+
+CREATE INDEX idx_user_id ON articles(user_id);
+CREATE INDEX idx_status_created ON articles(status, created_at);
+CREATE INDEX idx_deleted_at ON articles(deleted_at);
 
 CREATE TABLE IF NOT EXISTS tags (
-  id   BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(32)     NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY uk_name (name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  id   BIGSERIAL PRIMARY KEY,
+  name VARCHAR(32) NOT NULL
+);
+
+CREATE UNIQUE INDEX uk_name ON tags(name);
 
 CREATE TABLE IF NOT EXISTS article_tags (
-  article_id BIGINT UNSIGNED NOT NULL,
-  tag_id     BIGINT UNSIGNED NOT NULL,
-  PRIMARY KEY (article_id, tag_id),
-  KEY idx_tag_article (tag_id, article_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  article_id BIGINT NOT NULL,
+  tag_id     BIGINT NOT NULL,
+  PRIMARY KEY (article_id, tag_id)
+);
+
+CREATE INDEX idx_tag_article ON article_tags(tag_id, article_id);

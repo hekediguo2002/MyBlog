@@ -1,19 +1,17 @@
 version: "3.8"
 services:
-  mysql:
-    image: mysql:8.0
+  postgres:
+    image: postgres:16
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: blog
-      MYSQL_USER: blog
-      MYSQL_PASSWORD: blog
-    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
-    ports: ["3306:3306"]
-    volumes: ["mysql-data:/var/lib/mysql"]
+      POSTGRES_DB: blog
+      POSTGRES_USER: blog
+      POSTGRES_PASSWORD: blog
+    ports: ["5432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
   redis:
     image: redis:7-alpine
     restart: unless-stopped
     ports: ["6379:6379"]
 volumes:
-  mysql-data:
+  postgres-data:

@@ -18,7 +18,7 @@
 | 语言 | Go | 1.20+ |
 | Web 框架 | Gin | 1.9.1 |
 | ORM | GORM | 1.31.1 |
-| 数据库 | MySQL | 8.0+ |
+| 数据库 | PostgreSQL | 16+ |
 | 缓存 | Redis | 7.0+ |
 
 ## 快速开始
@@ -161,8 +161,8 @@ server:
   static_dir: "../Web"    # 前端静态文件目录
   upload_dir: "./uploads" # 上传文件目录
 
-mysql:
-  dsn: "blog:blog@tcp(127.0.0.1:3306)/blog?charset=utf8mb4&parseTime=true"
+postgres:
+  dsn: "host=127.0.0.1 port=5432 user=blog password=blog dbname=blog sslmode=disable TimeZone=Asia/Shanghai"
 
 redis:
   addr: "127.0.0.1:6379"

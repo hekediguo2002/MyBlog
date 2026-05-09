@@ -16,10 +16,10 @@ build:
 	go build -o bin/server ./cmd/server
 
 migrate-up:
-	@echo "Applying migrations/*.up.sql to MySQL..."
+	@echo "Applying migrations/*.up.sql to PostgreSQL..."
 	@for f in migrations/*.up.sql; do \
 		echo "==> $$f"; \
-		mysql -h 127.0.0.1 -P 3306 -u blog -pblog blog < $$f || exit 1; \
+		psql -h 127.0.0.1 -p 5432 -U blog -d blog -f $$f || exit 1; \
 	done
 
 lint:
