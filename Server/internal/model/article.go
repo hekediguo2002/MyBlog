@@ -10,7 +10,7 @@ type Article struct {
 	ID        uint64         `gorm:"primaryKey;column:id"`
 	UserID    uint64         `gorm:"index:idx_user_id;column:user_id"`
 	Title     string         `gorm:"size:200;column:title"`
-	Content   string         `gorm:"type:mediumtext;column:content"`
+	Content   string         `gorm:"type:text;column:content"`
 	Summary   string         `gorm:"size:500;column:summary"`
 	ViewCount uint64         `gorm:"column:view_count;default:0"`
 	Status    int8           `gorm:"column:status;default:1"`

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章详情 · 小绿书</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="vendor/github-md.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <div class="page-wrapper">
+    <div class="detail-hd">
+      <div class="detail-kicker" id="kicker">
+        <span class="pill" id="kicker-pill">长读</span>
+        <span class="meta" id="kicker-meta">工程 · 2026年5月1日</span>
+      </div>
+      <h1 class="detail-title" id="title"></h1>
+      <div class="detail-desc" id="desc"></div>
+      <div class="detail-author" id="author"></div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-article markdown-body" id="content"></div>
+      <div class="detail-side">
+        <div class="side-card">
+          <h3>目录</h3>
+          <div id="toc" style="font-size:0.8125rem;color:#9A9CA8;line-height:1.8"></div>
+        </div>
+        <div class="side-card">
+          <h3>文章统计</h3>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.8125rem">
+            <div style="display:flex;justify-content:space-between"><span style="color:#5A5C68">发布</span><span id="stat-date" style="color:#F5F5F0"></span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:#5A5C68">浏览</span><span id="stat-views" style="color:#F5F5F0;font-family:'JetBrains Mono',monospace"></span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:#5A5C68">作者</span><a id="stat-author" style="color:#D4FF3D;font-family:'JetBrains Mono',monospace" href="#"></a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tag-row" id="tag-row" style="display:none">
+      <span class="label">标签</span>
+    </div>
+    <div class="bio-wrap" id="bio-wrap" style="display:none">
+      <div class="bio-card">
+        <div class="av-big" id="bio-av"></div>
+        <div class="info">
+          <div class="name" id="bio-name"></div>
+          <div class="handle" id="bio-handle"></div>
+        </div>
+        <a class="follow-btn" id="bio-btn" href="#">关注作者</a>
+      </div>
+    </div>
+    <div class="rel-wrap" id="rel-wrap" style="display:none">
+      <h2>相关文章</h2>
+      <div class="rel-grid" id="rel-grid"></div>
+    </div>
+    <div class="site-footer">
+      <span class="ftL">©  2026  小绿书  ·  在公网上写下去</span>
+      <span class="ftL" id="footer-path">文章详情</span>
+    </div>
+  </div>
+  <script type="module" src="assets/js/pages/detail.js?v=5"></script>
+</body>
+</html>

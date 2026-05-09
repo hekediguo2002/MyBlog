@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -f /Users/wjr/Library/Caches/Homebrew/downloads/*.incomplete)",
+      "Bash(rm -f /usr/local/var/homebrew/locks/*)"
+    ]
+  }
+}

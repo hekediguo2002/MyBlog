@@ -18,6 +18,7 @@ import (
 	"github.com/wjr/blog/server/internal/db"
 	"github.com/wjr/blog/server/internal/handler"
 	"github.com/wjr/blog/server/internal/middleware"
+	"github.com/wjr/blog/server/internal/model"
 	"github.com/wjr/blog/server/internal/repository"
 	"github.com/wjr/blog/server/internal/router"
 	"github.com/wjr/blog/server/internal/service"
@@ -54,7 +55,10 @@ func main() {
 
 	gdb, err := db.Open(db.DefaultOptions(cfg.MySQL.DSN))
 	if err != nil {
-		log.Fatal().Err(err).Msg("open mysql")
+		log.Fatal().Err(err).Msg("open db")
+	}
+	if err := gdb.AutoMigrate(&model.User{}, &model.Article{}, &model.Tag{}); err != nil {
+		log.Fatal().Err(err).Msg("auto migrate")
 	}
 
 	rdb, err := cache.Open(cache.Default(cfg.Redis.Addr, cfg.Redis.DB))

@@ -1,5 +1,5 @@
-import '../vendor/marked.min.js';
-import '../vendor/highlight.min.js';
+import '../../vendor/marked.min.js';
+import '../../vendor/highlight.min.js';
 
 const { marked } = window;
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormlog "gorm.io/gorm/logger"
 )
@@ -28,7 +28,7 @@ func DefaultOptions(dsn string) Options {
 }
 
 func Open(opt Options) (*gorm.DB, error) {
-	gdb, err := gorm.Open(mysql.Open(opt.DSN), &gorm.Config{
+	gdb, err := gorm.Open(postgres.Open(opt.DSN), &gorm.Config{
 		Logger: gormlog.Default.LogMode(gormlog.Warn),
 	})
 	if err != nil {

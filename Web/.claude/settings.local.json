@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker run *)",
+      "Read(//usr/local/var/**)",
+      "Read(//opt/homebrew/var/**)",
+      "Bash(pg_isready)",
+      "Bash(redis-cli ping *)",
+      "Bash(brew services *)",
+      "Bash(brew install *)",
+      "Bash(psql -U blog -d blog -c \"SELECT 1\")",
+      "Bash(psql -U postgres -c \"CREATE USER blog WITH PASSWORD 'blog'; CREATE DATABASE blog OWNER blog;\")",
+      "Bash(pg_config --bindir)",
+      "Bash(go build *)",
+      "Bash(./server-current)",
+      "Bash(echo \"Started with PID $!\")",
+      "Bash(lsof -i :8080)",
+      "Bash(xargs kill *)",
+      "Bash(curl -s http://localhost:8080/list.html)",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "Bash(git remote *)",
+      "Bash(git fetch *)",
+      "Bash(git config *)",
+      "Bash(env)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(gh auth *)",
+      "Bash(gh --version)"
+    ]
+  }
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>编辑器 · 小绿书</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+  <div class="editor-navbar">
+    <div class="navL">
+      <span class="brand">小绿书</span>
+      <span class="divider">／</span>
+      <span class="crumb" id="page-title">撰写新稿</span>
+      <span class="slug" id="slug">draft://</span>
+    </div>
+    <div class="navR">
+      <span class="saved-dot" id="saved-dot">●</span>
+      <span class="saved-txt" id="saved-txt">草稿已同步</span>
+      <a href="/list.html" class="btn btn-secondary btn-sm" id="cancel-btn">取消</a>
+      <button class="btn btn-secondary btn-sm" id="draft-btn">存草稿</button>
+      <button class="btn btn-primary btn-sm" id="publish-btn">发布</button>
+    </div>
+  </div>
+  <div class="editor-body">
+    <div class="editor-main">
+      <div class="editor-head">
+        <div class="kicker" id="kicker">⊹  新文章  ·  草稿 01</div>
+        <input class="title-input" id="title" placeholder="在此输入标题…" maxlength="200">
+        <div class="sub-label">副标题 / 摘要 (可选, 展示在列表卡片上)</div>
+        <input class="sub-input" id="summary" placeholder="写下一份简短的摘要…">
+        <div class="tag-wrap" id="tag-wrap">
+          <input type="text" id="tag-input" placeholder="+ 添加标签 (按回车)" style="background:transparent;border:none;color:#9A9CA8;font-family:'JetBrains Mono',monospace;font-size:0.75rem;outline:none;width:160px">
+          <input type="hidden" id="tags">
+        </div>
+      </div>
+      <div class="editor-toolbar">
+        <div class="tbL">
+          <button type="button" id="btn-bold">B</button>
+          <span class="sep">·</span>
+          <button type="button" id="btn-italic">I</button>
+          <span class="sep">·</span>
+          <button type="button" id="btn-h2">H₂</button>
+          <span class="sep">·</span>
+          <button type="button" id="btn-code">⌗</button>
+          <span class="sep">·</span>
+          <button type="button" id="btn-quote">❝</button>
+          <span class="sep">·</span>
+          <button type="button" id="btn-link">🔗</button>
+        </div>
+        <button class="tbR" id="btn-image">▢ 插入图片</button>
+      </div>
+      <div class="editor-textarea-wrap">
+        <div class="editor-gutter" id="gutter">
+          <div class="ln cur">1</div>
+        </div>
+        <textarea class="editor-textarea" id="content" placeholder="在此输入 Markdown 内容…"></textarea>
+      </div>
+    </div>
+    <div class="editor-side">
+      <div class="side-panel-card">
+        <h3>⊹ 发布前检查 <span class="count" id="check-count">0 / 4</span></h3>
+        <div class="check-item pending" id="ck-title"><span class="check-icon">○</span> 标题字数在 1–200 之间</div>
+        <div class="check-item pending" id="ck-tags"><span class="check-icon">○</span> 至少包含 1 个标签</div>
+        <div class="check-item pending" id="ck-content"><span class="check-icon">○</span> 正文不少于 10 字</div>
+        <div class="check-item pending" id="ck-summary"><span class="check-icon">○</span> 添加摘要 (可选, 推荐)</div>
+      </div>
+      <div class="side-panel-card">
+        <h3>⌘ 快捷键</h3>
+        <div class="side-list">
+          <div class="sc-row"><span class="key">加粗</span><span class="val">⌘ B</span></div>
+          <div class="sc-row"><span class="key">斜体</span><span class="val">⌘ I</span></div>
+          <div class="sc-row"><span class="key">代码块</span><span class="val">⌘ ⇧ C</span></div>
+          <div class="sc-row"><span class="key">插入链接</span><span class="val">⌘ K</span></div>
+        </div>
+      </div>
+      <div class="side-panel-card" id="uploads-card" style="display:none">
+        <h3>上传记录 <span style="font-family:'JetBrains Mono',monospace;font-size:0.6875rem;color:#5A5C68">≤ 5 MB</span></h3>
+        <div id="upload-list"></div>
+      </div>
+    </div>
+  </div>
+  <div class="editor-statusbar">
+    <div class="sbL">
+      <span class="dot" id="sb-dot">●</span>
+      <span class="txt" id="sb-status">已自动保存到本机草稿</span>
+      <span class="sep">·</span>
+      <span class="txt-muted" id="sb-time">--:--:--</span>
+      <span class="sep">·</span>
+      <span class="txt-muted" id="sb-count">0 字 · 约 0 分钟</span>
+    </div>
+    <div class="sbR">
+      <span class="txt-muted">UTF-8 / Markdown</span>
+    </div>
+  </div>
+  <input type="file" id="file-input" accept="image/*" style="display:none">
+  <script type="module" src="assets/js/pages/editor.js?v=5"></script>
+</body>
+</html>

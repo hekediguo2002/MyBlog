@@ -1,13 +1,20 @@
-import { get } from './api.js';
-
-let cache = null;
+let cache;
 
 export async function getCurrentUser(force = false) {
   if (!force && cache !== undefined) return cache;
   try {
-    const u = await get('/auth/me');
-    cache = u || null;
-    return cache;
+    const csrf = document.cookie.match(/csrf_token=([^;]*)/)?.[1] || '';
+    const r = await fetch('/api/v1/auth/me', {
+      credentials: 'include',
+      headers: { 'X-CSRF-Token': csrf },
+    });
+    const json = await r.json();
+    if (json.code === 0) {
+      cache = json.data || null;
+      return cache;
+    }
+    cache = null;
+    return null;
   } catch {
     cache = null;
     return null;

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章列表 · 小绿书</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <div class="page-wrapper">
+    <div class="list-body container">
+      <div class="list-main">
+        <div id="featured-mount" style="display:none;margin-bottom:2rem"></div>
+        <div id="article-list"></div>
+        <div id="pager-mount"></div>
+      </div>
+      <div class="list-side">
+        <div class="side-card">
+          <h3>趋势文章</h3>
+          <div class="side-list" id="trending-list">
+            <div class="side-item" style="color:#5A5C68">加载中…</div>
+          </div>
+        </div>
+        <div class="side-card">
+          <h3>活跃写作者</h3>
+          <div class="side-list" id="writers-list">
+            <div class="side-item" style="color:#5A5C68">加载中…</div>
+          </div>
+        </div>
+        <div class="side-card">
+          <h3>热门标签</h3>
+          <div id="tags-list" style="display:flex;flex-wrap:wrap;gap:0.5rem"></div>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer">
+      <span class="ftL">©  2026  小绿书  ·  在公网上写下去</span>
+      <span class="ftL">v0.4.7  ·  此刻有 127 位写作者在线</span>
+    </div>
+  </div>
+  <script type="module" src="assets/js/pages/list.js?v=5"></script>
+</body>
+</html>

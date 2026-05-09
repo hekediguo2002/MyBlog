@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人主页 · 小绿书</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <div class="page-wrapper">
+    <div class="profile-hero">
+      <div class="hero-kicker" id="hero-kicker">⊹  写作者档案</div>
+      <div class="profile-hRow">
+        <div class="av-big" id="avatar">?</div>
+        <div class="info">
+          <div class="name-row">
+            <div class="name" id="name"></div>
+            <div class="badge" id="badge" style="display:none"></div>
+          </div>
+          <div class="handle" id="handle"></div>
+          <div class="bio" id="bio"></div>
+          <div class="links" id="links"></div>
+        </div>
+        <div class="hAct" id="hAct" style="display:none">
+          <button class="edit-btn" id="edit-btn">编辑资料</button>
+          <span class="update" id="update"></span>
+        </div>
+      </div>
+    </div>
+    <div class="stats-bar" id="stats-bar">
+      <div class="stat-item">
+        <div class="stat-label">已发布</div>
+        <div class="stat-val" id="stat-articles">0</div>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item">
+        <div class="stat-label">总浏览</div>
+        <div class="stat-val" id="stat-views">0</div>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item">
+        <div class="stat-label">关注者</div>
+        <div class="stat-val" id="stat-followers">0</div>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item">
+        <div class="stat-label">最近 7 天</div>
+        <div class="stat-val" id="stat-week">0</div>
+      </div>
+    </div>
+    <div class="profile-tabs">
+      <div class="tab active" id="tab-articles">文章 <span class="count" id="tab-count">0</span></div>
+      <div class="tab" id="tab-about">关于</div>
+      <div class="spacer"></div>
+      <div class="sort" id="sort-box">
+        <a href="#" class="active">按发布</a>
+        <span class="sep">·</span>
+        <a href="#">按浏览</a>
+        <span class="sep">·</span>
+        <a href="#">按字数</a>
+      </div>
+    </div>
+    <div class="profile-list" id="profile-list"></div>
+    <div id="pager-mount"></div>
+    <div class="site-footer-alt">
+      <div style="display:flex;flex-direction:column;gap:0.375rem">
+        <span style="font-size:0.875rem;font-weight:700;color:#F5F5F0;letter-spacing:1.8px">小绿书</span>
+        <span style="font-size:0.75rem;color:#5A5C68">⊹ 不打包、不构建、就这么直接打开。</span>
+      </div>
+      <div class="links">
+        <a href="#">GitHub</a>
+        <span class="sep">·</span>
+        <a href="#">RSS</a>
+        <span class="sep">·</span>
+        <span>v0.4.7</span>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="assets/js/pages/profile.js?v=5"></script>
+</body>
+</html>

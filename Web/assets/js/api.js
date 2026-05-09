@@ -36,7 +36,9 @@ export async function request(path, opts = {}) {
     const msg = json.message || '登录已过期，请重新登录';
     import('./components/toast.js').then(m => m.showToast({ type: 'error', text: msg }));
     setTimeout(() => {
-      location.href = '/login.html?redirect=' + encodeURIComponent(location.pathname + location.search);
+      if (!location.pathname.startsWith('/login')) {
+        location.href = '/login.html?redirect=' + encodeURIComponent(location.pathname + location.search);
+      }
     }, 100);
     throw json;
   }
@@ -51,6 +53,6 @@ export async function request(path, opts = {}) {
 }
 
 export const get = (p) => request(p);
-export const post = (p, body) => request(p, { method: 'POST', body: JSON.stringify(body) });
+export const post = (p, body) => request(p, { method: 'POST', body: body instanceof FormData ? body : JSON.stringify(body) });
 export const put = (p, body) => request(p, { method: 'PUT', body: JSON.stringify(body) });
 export const del = (p) => request(p, { method: 'DELETE' });
